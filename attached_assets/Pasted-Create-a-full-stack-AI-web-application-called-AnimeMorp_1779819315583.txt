@@ -1,0 +1,127 @@
+Create a full-stack AI web application called “AnimeMorph AI”.
+
+The app should allow users to:
+
+Upload a video up to 10 minutes
+Detect people/faces in the video
+Convert detected people into animated/anime/cartoon characters
+Export the processed animated video
+Upload a photo and generate a short animated talking/stylized video from it
+
+Build the app using this stack:
+
+Frontend:
+
+Next.js
+React
+Tailwind CSS
+Modern dark UI
+Responsive mobile-friendly design
+
+Backend:
+
+Python FastAPI
+REST API architecture
+Background processing system
+
+AI/Video Processing:
+
+FFmpeg
+OpenCV
+MediaPipe for pose and face detection
+Stable Diffusion
+AnimateDiff
+Diffusers
+PyTorch
+
+Storage:
+
+Supabase Storage or AWS S3
+
+Authentication:
+
+Email/password auth
+JWT authentication
+
+Features:
+
+Drag and drop upload
+Upload progress bar
+Video preview
+Processing status tracker
+Queue system for rendering jobs
+Download final MP4
+User dashboard with render history
+
+Video Processing Pipeline:
+
+Upload video
+Extract frames using FFmpeg
+Detect humans/faces using MediaPipe
+Apply anime/cartoon transformation using AI model
+Rebuild frames into MP4
+Preserve original audio
+Save final video
+
+Photo Animation Pipeline:
+
+Upload image
+Detect face
+Create animated avatar/video
+Export MP4
+
+Architecture Requirements:
+
+Separate frontend and backend folders
+Docker support
+Redis queue integration
+Celery workers
+Environment variable support
+GitHub-ready project structure
+
+Deployment Requirements:
+
+Optimized for Replit development
+GitHub integration
+Render deployment compatible
+GPU worker support through RunPod or Modal
+
+Create:
+
+Complete folder structure
+API routes
+Backend endpoints
+Frontend pages
+Upload components
+Processing components
+Tailwind UI
+Example environment files
+README with setup instructions
+
+Important:
+
+Start with MVP optimized for short videos (10–30 seconds)
+Keep code modular and production-ready
+Use async processing
+Use FFmpeg efficiently
+Include error handling
+Include loading states
+Include comments in code
+
+UI Theme:
+
+Futuristic AI video studio
+Dark mode
+Purple/blue gradients
+Smooth animations
+
+Project name:
+AnimeMorph AI
+
+For the BEST results, split the build into stages instead of one huge prompt:
+
+Build frontend first
+Build upload API
+Build AI pipeline
+Build queue system
+Build deployment setup

@@ -1,0 +1,2 @@
+- [Clerk React v5/v6 version pinning](clerk-react-v6-compat.md) — @clerk/react@5.54+ needs @clerk/shared@4.x; use workspace override + @clerk/react@^6.7.1.
+- [Clerk v6 API changes](clerk-react-v6-compat.md) — v6 exports Show (not SignedIn/SignedOut), no publishableKeyFromHost in @clerk/react/internal; use VITE_CLERK_PUBLISHABLE_KEY directly.
