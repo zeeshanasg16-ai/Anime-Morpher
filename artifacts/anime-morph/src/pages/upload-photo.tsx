@@ -76,6 +76,17 @@ export default function UploadPhoto() {
         data: { name: file.name, size: file.size, contentType: file.type },
       });
 
+      if (
+        !urlData ||
+        typeof urlData !== "object" ||
+        typeof (urlData as any).uploadURL !== "string" ||
+        !/^https?:\/\//i.test((urlData as any).uploadURL)
+      ) {
+        throw new Error(
+          "Upload endpoint did not return a valid URL. The API server is unreachable or misconfigured (VITE_API_BASE_URL may be wrong).",
+        );
+      }
+
       const xhr = new XMLHttpRequest();
       await new Promise<void>((resolve, reject) => {
         xhr.upload.addEventListener("progress", (e) => {
