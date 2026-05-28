@@ -138,7 +138,7 @@ export default function Dashboard() {
               <Skeleton key={i} className="h-20 rounded-xl" />
             ))}
           </div>
-        ) : !recent || recent.length === 0 ? (
+        ) : !Array.isArray(recent) || recent.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-border/50 p-12 text-center" data-testid="empty-recent-jobs">
             <Plus className="w-8 h-8 text-muted-foreground mx-auto mb-3" />
             <p className="text-muted-foreground text-sm">No jobs yet. Start your first transformation above.</p>

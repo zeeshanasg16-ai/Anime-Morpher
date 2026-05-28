@@ -110,7 +110,7 @@ export default function History() {
             <Skeleton key={i} className="h-20 rounded-xl" />
           ))}
         </div>
-      ) : !data || data.jobs.length === 0 ? (
+      ) : !data || !Array.isArray(data.jobs) || data.jobs.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-border/50 p-16 text-center" data-testid="empty-history">
           <Clock className="w-10 h-10 text-muted-foreground mx-auto mb-4" />
           <p className="text-muted-foreground">
