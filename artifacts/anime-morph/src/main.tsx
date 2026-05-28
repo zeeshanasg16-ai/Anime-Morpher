@@ -1,7 +1,13 @@
 import { Component, type ErrorInfo, type ReactNode } from "react";
 import { createRoot } from "react-dom/client";
+import { setBaseUrl } from "@workspace/api-client-react";
 import App from "./App";
 import "./index.css";
+
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL as string | undefined;
+if (apiBaseUrl) {
+  setBaseUrl(apiBaseUrl);
+}
 
 class RootErrorBoundary extends Component<
   { children: ReactNode },
