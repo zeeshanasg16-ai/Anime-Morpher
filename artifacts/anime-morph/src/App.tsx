@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ClerkProvider, SignIn, SignUp, Show, useClerk, ClerkLoaded, ClerkLoading } from "@clerk/react";
 import { shadcn } from "@clerk/themes";
 import { Switch, Route, useLocation, Router as WouterRouter, Redirect } from "wouter";
@@ -132,6 +132,13 @@ function HomeRedirect() {
 }
 
 function ProtectedRoute({ component: Component }: { component: React.ComponentType }) {
+  if (authBypass) {
+    return (
+      <Layout>
+        <Component />
+      </Layout>
+    );
+  }
   return (
     <>
       <Show when="signed-in">
@@ -142,6 +149,47 @@ function ProtectedRoute({ component: Component }: { component: React.ComponentTy
       <Show when="signed-out">
         <Redirect to="/sign-in" />
       </Show>
+    </>
+  );
+}
+
+// If Clerk fails to load within this window (network errors, 502s, blocked),
+// the app will render without auth so the user is never stuck on a spinner.
+const CLERK_LOAD_TIMEOUT_MS = 6000;
+let authBypass = false;
+
+function ClerkGate({ children }: { children: React.ReactNode }) {
+  const [timedOut, setTimedOut] = useState(false);
+
+  useEffect(() => {
+    const id = window.setTimeout(() => {
+      authBypass = true;
+      setTimedOut(true);
+      // eslint-disable-next-line no-console
+      console.warn(
+        "[AnimeMorph] Clerk did not load within " +
+          CLERK_LOAD_TIMEOUT_MS +
+          "ms — continuing without authentication.",
+      );
+    }, CLERK_LOAD_TIMEOUT_MS);
+    return () => window.clearTimeout(id);
+  }, []);
+
+  if (timedOut) {
+    return <>{children}</>;
+  }
+
+  return (
+    <>
+      <ClerkLoading>
+        <div className="flex min-h-[100dvh] items-center justify-center bg-background text-muted-foreground">
+          <div className="flex flex-col items-center gap-3">
+            <div className="w-8 h-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+            <p className="text-sm">Loading AnimeMorph…</p>
+          </div>
+        </div>
+      </ClerkLoading>
+      <ClerkLoaded>{children}</ClerkLoaded>
     </>
   );
 }
@@ -175,41 +223,33 @@ function ClerkProviderWithRoutes() {
     >
       <QueryClientProvider client={queryClient}>
         <ClerkQueryClientCacheInvalidator />
-        <ClerkLoading>
-          <div className="flex min-h-[100dvh] items-center justify-center bg-background text-muted-foreground">
-            <div className="flex flex-col items-center gap-3">
-              <div className="w-8 h-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
-              <p className="text-sm">Loading AnimeMorph…</p>
-            </div>
-          </div>
-        </ClerkLoading>
-        <ClerkLoaded>
-        <TooltipProvider>
-          <Switch>
-            <Route path="/" component={HomeRedirect} />
-            <Route path="/sign-in/*?" component={SignInPage} />
-            <Route path="/sign-up/*?" component={SignUpPage} />
+        <ClerkGate>
+          <TooltipProvider>
+            <Switch>
+              <Route path="/" component={HomeRedirect} />
+              <Route path="/sign-in/*?" component={SignInPage} />
+              <Route path="/sign-up/*?" component={SignUpPage} />
 
-            <Route path="/dashboard">
-              <ProtectedRoute component={Dashboard} />
-            </Route>
-            <Route path="/upload/video">
-              <ProtectedRoute component={UploadVideo} />
-            </Route>
-            <Route path="/upload/photo">
-              <ProtectedRoute component={UploadPhoto} />
-            </Route>
-            <Route path="/jobs/:id">
-              <ProtectedRoute component={JobDetail} />
-            </Route>
-            <Route path="/history">
-              <ProtectedRoute component={History} />
-            </Route>
+              <Route path="/dashboard">
+                <ProtectedRoute component={Dashboard} />
+              </Route>
+              <Route path="/upload/video">
+                <ProtectedRoute component={UploadVideo} />
+              </Route>
+              <Route path="/upload/photo">
+                <ProtectedRoute component={UploadPhoto} />
+              </Route>
+              <Route path="/jobs/:id">
+                <ProtectedRoute component={JobDetail} />
+              </Route>
+              <Route path="/history">
+                <ProtectedRoute component={History} />
+              </Route>
 
-            <Route component={NotFound} />
-          </Switch>
-        </TooltipProvider>
-        </ClerkLoaded>
+              <Route component={NotFound} />
+            </Switch>
+          </TooltipProvider>
+        </ClerkGate>
       </QueryClientProvider>
     </ClerkProvider>
   );
