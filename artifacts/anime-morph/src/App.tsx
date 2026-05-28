@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { ClerkProvider, SignIn, SignUp, Show, useClerk } from "@clerk/react";
+import { ClerkProvider, SignIn, SignUp, Show, useClerk, ClerkLoaded, ClerkLoading } from "@clerk/react";
 import { shadcn } from "@clerk/themes";
 import { Switch, Route, useLocation, Router as WouterRouter, Redirect } from "wouter";
 import { queryClient } from "@/lib/queryClient";
@@ -175,6 +175,15 @@ function ClerkProviderWithRoutes() {
     >
       <QueryClientProvider client={queryClient}>
         <ClerkQueryClientCacheInvalidator />
+        <ClerkLoading>
+          <div className="flex min-h-[100dvh] items-center justify-center bg-background text-muted-foreground">
+            <div className="flex flex-col items-center gap-3">
+              <div className="w-8 h-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+              <p className="text-sm">Loading AnimeMorph…</p>
+            </div>
+          </div>
+        </ClerkLoading>
+        <ClerkLoaded>
         <TooltipProvider>
           <Switch>
             <Route path="/" component={HomeRedirect} />
@@ -200,6 +209,7 @@ function ClerkProviderWithRoutes() {
             <Route component={NotFound} />
           </Switch>
         </TooltipProvider>
+        </ClerkLoaded>
       </QueryClientProvider>
     </ClerkProvider>
   );
