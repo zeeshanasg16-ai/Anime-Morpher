@@ -1,9 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { useClerk, useUser } from "@clerk/react";
-import { Button } from "@/components/ui/button";
-import { Sparkles, LayoutDashboard, Upload, History, LogOut, Video, ImageIcon } from "lucide-react";
-
-const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
+import { Sparkles, LayoutDashboard, History, Video, ImageIcon } from "lucide-react";
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -14,8 +10,6 @@ const navItems = [
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
-  const { signOut } = useClerk();
-  const { user } = useUser();
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -56,34 +50,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
             );
           })}
         </nav>
-
-        {/* User section */}
-        <div className="px-3 py-4 border-t border-border">
-          {user && (
-            <div className="flex items-center gap-3 px-3 py-2 mb-2 rounded-lg">
-              {user.imageUrl ? (
-                <img src={user.imageUrl} alt="avatar" className="w-8 h-8 rounded-full ring-2 ring-primary/20" />
-              ) : (
-                <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-xs font-bold text-primary">
-                  {user.firstName?.[0] ?? user.emailAddresses[0]?.emailAddress[0] ?? "U"}
-                </div>
-              )}
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-foreground truncate">{user.firstName ?? "User"}</p>
-                <p className="text-xs text-muted-foreground truncate">{user.emailAddresses[0]?.emailAddress}</p>
-              </div>
-            </div>
-          )}
-          <Button
-            variant="ghost"
-            className="w-full justify-start gap-3 text-muted-foreground hover:text-foreground hover:bg-white/5 px-3"
-            onClick={() => signOut({ redirectUrl: basePath || "/" })}
-            data-testid="button-sign-out"
-          >
-            <LogOut className="w-4 h-4" />
-            Sign out
-          </Button>
-        </div>
       </aside>
 
       {/* Main content */}
