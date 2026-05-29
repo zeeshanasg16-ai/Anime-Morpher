@@ -8,7 +8,7 @@
 import type { UploadUrlRequest } from './uploadUrlRequest';
 
 export interface UploadUrlResponse {
-  /** Presigned GCS URL for PUT upload. */
+  /** Presigned URL (Cloudflare R2, S3-compatible) for PUT upload. */
   uploadURL: string;
   /** Normalized object path. Store this in your database. */
   objectPath: string;

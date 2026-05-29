@@ -247,8 +247,9 @@ paths:
       operationId: requestUploadUrl
       summary: Request a presigned URL for file upload
       description: |
-        Returns a presigned GCS URL for direct upload. The client sends JSON
-        metadata here, then uploads the file directly to the returned URL.
+        Returns a presigned upload URL (Cloudflare R2, S3-compatible) for direct
+        upload. The client sends JSON metadata here, then uploads the file
+        directly to the returned URL.
       requestBody:
         required: true
         content:
@@ -470,7 +471,7 @@ components:
         uploadURL:
           type: string
           format: uri
-          description: Presigned GCS URL for PUT upload.
+          description: Presigned URL (Cloudflare R2, S3-compatible) for PUT upload.
         objectPath:
           type: string
           description: Normalized object path. Store this in your database.

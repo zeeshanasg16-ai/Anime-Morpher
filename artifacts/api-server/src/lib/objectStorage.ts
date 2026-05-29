@@ -108,8 +108,11 @@ export class ObjectStorageService {
     try {
       await this.assertExists(key);
       return { key };
-    } catch {
-      return null;
+    } catch (err) {
+      if (err instanceof ObjectNotFoundError) {
+        return null;
+      }
+      throw err;
     }
   }
 

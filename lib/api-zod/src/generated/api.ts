@@ -184,8 +184,9 @@ export const RetryJobResponse = zod.object({
 
 
 /**
- * Returns a presigned GCS URL for direct upload. The client sends JSON
-metadata here, then uploads the file directly to the returned URL.
+ * Returns a presigned upload URL (Cloudflare R2, S3-compatible) for direct
+upload. The client sends JSON metadata here, then uploads the file
+directly to the returned URL.
 
  * @summary Request a presigned URL for file upload
  */
@@ -206,7 +207,7 @@ export const RequestUploadUrlBody = zod.object({
 
 
 export const RequestUploadUrlResponse = zod.object({
-  "uploadURL": zod.string().url().describe('Presigned GCS URL for PUT upload.'),
+  "uploadURL": zod.string().url().describe('Presigned URL (Cloudflare R2, S3-compatible) for PUT upload.'),
   "objectPath": zod.string().describe('Normalized object path. Store this in your database.'),
   "metadata": zod.object({
   "name": zod.string().min(1).describe('Original file name.'),

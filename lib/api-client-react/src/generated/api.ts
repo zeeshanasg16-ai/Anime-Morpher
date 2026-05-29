@@ -656,8 +656,9 @@ export const getRequestUploadUrlUrl = () => {
 }
 
 /**
- * Returns a presigned GCS URL for direct upload. The client sends JSON
-metadata here, then uploads the file directly to the returned URL.
+ * Returns a presigned upload URL (Cloudflare R2, S3-compatible) for direct
+upload. The client sends JSON metadata here, then uploads the file
+directly to the returned URL.
 
  * @summary Request a presigned URL for file upload
  */
