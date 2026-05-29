@@ -75,10 +75,6 @@ onlyBuiltDependencies:
   - unrs-resolver
 
 overrides:
-  # Force @clerk/shared to 4.x — @clerk/react@5.54+ requires loadClerkUiScript
-  # which was added in @clerk/shared@4.x (3.47.6 does not have it).
-  "@clerk/shared": "^4.13.1"
-
   # replit uses linux-x64 only, we can exclude all other platforms
   "esbuild>@esbuild/darwin-arm64": "-"
   "esbuild>@esbuild/darwin-x64": "-"

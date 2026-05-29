@@ -1,6 +1,5 @@
 import { Router, type IRouter } from "express";
 import { eq, and, desc, count, sql } from "drizzle-orm";
-import { getAuth } from "@clerk/express";
 import { db, jobsTable } from "@workspace/db";
 import {
   CreateJobBody,
@@ -12,14 +11,12 @@ import {
 
 const router: IRouter = Router();
 
-function requireAuth(req: any, res: any, next: any): void {
-  const auth = getAuth(req);
-  const userId = auth?.userId;
-  if (!userId) {
-    res.status(401).json({ error: "Unauthorized" });
-    return;
-  }
-  req.userId = userId;
+// Authentication has been removed. All jobs are owned by a single shared
+// anonymous user so the existing per-user scoping logic keeps working.
+const ANONYMOUS_USER_ID = "anonymous";
+
+function requireAuth(req: any, _res: any, next: any): void {
+  req.userId = ANONYMOUS_USER_ID;
   next();
 }
 
