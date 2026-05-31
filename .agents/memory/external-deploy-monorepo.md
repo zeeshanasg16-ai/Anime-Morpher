@@ -32,3 +32,26 @@ streams objects back via `GetObjectCommand`. Requires env `R2_ACCOUNT_ID`,
 frontend origin, AllowedMethods PUT/GET, AllowedHeaders `*`) or browser uploads
 fail. (2) Upload-URL issuance is anonymous — enforce a server-side size ceiling
 (`MAX_UPLOAD_BYTES`) since client-provided metadata is untrusted.
+
+**Single-service deploy: the Express API serves the React build.** Off-Replit
+(e.g. Render free tier) the simplest topology is ONE web service: the API serves
+`anime-morph/dist/public` as static + an SPA fallback in production, so one origin
+answers both `/api/*` and the SPA. The frontend then calls the API with relative
+`/api/...` (leave `VITE_API_BASE_URL` unset) — no CORS, no second service.
+**Why:** the root build (`pnpm run build`) compiles both artifacts, so the client
+dist is already present next to the API bundle at runtime.
+
+**External-deploy sharp edges learned:**
+- The host's build command must run the FULL build (`pnpm run build`), not
+  `--filter api-server` only, or the frontend dist won't exist to serve.
+- Locate the client dist via the API bundle, not cwd: at runtime `__dirname`
+  (esbuild banner) = `artifacts/api-server/dist`, so client = `../../anime-morph/dist/public`.
+- **Express 5 SPA fallback:** `app.get("/*splat", …)` matches `/apiary` but NOT
+  the bare root `/`. Use a plain `app.use` middleware (filter to GET/HEAD, exclude
+  `/api`) instead so `/` is covered.
+- Exclude API paths with `req.path === "/api" || startsWith("/api/")`, not a bare
+  `startsWith("/api")` (which also swallows `/apiary`).
+- Render's **External** Postgres URL requires SSL; the runtime `pg` Pool sets no
+  SSL, so the API service MUST use the **Internal** URL. For a one-off
+  `drizzle-kit push` from outside Render, append `?sslmode=no-verify` to the URL
+  or it hangs forever at "Pulling schema".

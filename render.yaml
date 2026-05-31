@@ -5,7 +5,10 @@ services:
     runtime: node
     region: oregon
     plan: free
-    buildCommand: npm install -g pnpm && pnpm install --frozen-lockfile && pnpm --filter @workspace/api-server run build
+    # Full build: compiles BOTH the API and the React frontend. The API serves
+    # the frontend's static build in production, so a single service answers
+    # `/api/*` and the SPA.
+    buildCommand: npm install -g pnpm && pnpm install --frozen-lockfile && pnpm run build
     startCommand: node --enable-source-maps artifacts/api-server/dist/index.mjs
     healthCheckPath: /api/healthz
     envVars:
@@ -25,19 +28,6 @@ services:
         sync: false
       - key: R2_BUCKET
         sync: false
-
-  # ── Frontend (React + Vite, static) ────────────────────────────────────────
-  - type: web
-    name: anime-morph-web
-    runtime: static
-    region: oregon
-    plan: free
-    buildCommand: npm install -g pnpm && pnpm install --frozen-lockfile && pnpm --filter @workspace/anime-morph run build
-    staticPublishPath: artifacts/anime-morph/dist/public
-    routes:
-      - type: rewrite
-        source: /*
-        destination: /index.html
-    envVars:
-      - key: VITE_API_BASE_URL
-        sync: false
+  # Single service only: the API above serves the React frontend in production,
+  # so no separate static site is needed. The frontend calls the API at the
+  # same origin via relative `/api/...` paths (no VITE_API_BASE_URL required).
