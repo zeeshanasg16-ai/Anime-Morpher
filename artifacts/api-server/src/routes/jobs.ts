@@ -232,12 +232,20 @@ async function simulateProcessing(jobId: number): Promise<void> {
 
   await sleep(2000);
 
+  // No real AI transformation runs (free-tier deployment has no GPU/AI worker),
+  // so the result simply references the originally uploaded file. This makes the
+  // output viewable and downloadable; it is not an actual anime conversion.
+  const [job] = await db
+    .select({ inputObjectPath: jobsTable.inputObjectPath })
+    .from(jobsTable)
+    .where(eq(jobsTable.id, jobId));
+
   await db
     .update(jobsTable)
     .set({
       status: "completed",
       progress: 100,
-      outputObjectPath: null,
+      outputObjectPath: job?.inputObjectPath ?? null,
     })
     .where(eq(jobsTable.id, jobId));
 }

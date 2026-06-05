@@ -131,7 +131,7 @@ export default function JobDetail() {
 
         <div className="flex items-center gap-2">
           {job.status === "completed" && job.outputObjectPath && (
-            <a href={`${basePath}/api/storage/objects${job.outputObjectPath}`} download>
+            <a href={`${basePath}/api/storage${job.outputObjectPath}`} download>
               <Button className="bg-green-500/10 hover:bg-green-500/20 text-green-400 border border-green-500/20" data-testid="button-download">
                 <Download className="mr-2 w-4 h-4" /> Download
               </Button>
@@ -203,22 +203,26 @@ export default function JobDetail() {
       {/* Output */}
       {job.status === "completed" && (
         <div className="rounded-2xl border border-green-500/20 bg-green-500/5 p-6 mb-6" data-testid="section-output">
-          <div className="flex items-center gap-2 mb-4">
+          <div className="flex items-center gap-2 mb-1">
             <CheckCircle2 className="w-5 h-5 text-green-400" />
             <h2 className="font-semibold text-green-400">Transformation complete</h2>
           </div>
+          <p className="text-xs text-muted-foreground mb-4">
+            Preview build: AI styling isn't applied yet — this shows your original
+            file so you can view and download it.
+          </p>
           {job.outputObjectPath ? (
             <div className="rounded-xl overflow-hidden bg-black/50 flex items-center justify-center min-h-[200px]">
               {job.type === "video_morph" ? (
                 <video
                   controls
                   className="max-h-96 w-full"
-                  src={`${basePath}/api/storage/objects${job.outputObjectPath}`}
+                  src={`${basePath}/api/storage${job.outputObjectPath}`}
                   data-testid="video-output"
                 />
               ) : (
                 <img
-                  src={`${basePath}/api/storage/objects${job.outputObjectPath}`}
+                  src={`${basePath}/api/storage${job.outputObjectPath}`}
                   alt="Transformed output"
                   className="max-h-96 object-contain"
                   data-testid="img-output"

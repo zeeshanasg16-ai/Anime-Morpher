@@ -33,6 +33,22 @@ frontend origin, AllowedMethods PUT/GET, AllowedHeaders `*`) or browser uploads
 fail. (2) Upload-URL issuance is anonymous — enforce a server-side size ceiling
 (`MAX_UPLOAD_BYTES`) since client-provided metadata is untrusted.
 
+**Object-path contract (avoid double `/objects/`).** The stored `objectPath` from
+`getUploadUrl` ALREADY includes the `/objects/` prefix (e.g.
+`/objects/uploads/<uuid>`), and the serving route `GET /api/storage/objects/*path`
+re-adds `/objects/` to the captured wildcard. So the correct fetch URL is
+`/api/storage${objectPath}` — NOT `/api/storage/objects${objectPath}` (that
+double-prefixes to `/objects/objects/...` → wrong key → 404). **Why:** this bug was
+latent for ages because completed jobs always had `outputObjectPath: null`, so the
+media `<video>/<img>` and download link never rendered; it only surfaced once the
+job pipeline started emitting a real output path.
+
+**No real AI transform (free-tier).** AnimeMorph has no GPU/AI worker; the job
+pipeline only simulates progress. On the free-tier deploy the "result" is set to
+the original uploaded file (`outputObjectPath = inputObjectPath`) so it's
+viewable/downloadable, with a UI note that AI styling isn't applied. Real anime
+conversion would need a paid AI service.
+
 **Single-service deploy: the Express API serves the React build.** Off-Replit
 (e.g. Render free tier) the simplest topology is ONE web service: the API serves
 `anime-morph/dist/public` as static + an SPA fallback in production, so one origin
