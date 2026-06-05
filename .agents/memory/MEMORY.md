@@ -1,1 +1,2 @@
 - [External deploy of monorepo](external-deploy-monorepo.md) — root `pnpm run build` fails on Replit-only dev artifacts (mockup-sandbox PORT/BASE_PATH); object storage sidecar is Replit-only.
+- [GPU worker pull model](gpu-worker-pull-model.md) — AnimeMorph offloads conversion to an external NAT'd GPU worker that polls/claims jobs; worker routes kept out of OpenAPI, atomic claim + stale reclaim, presigned-URL-only storage.

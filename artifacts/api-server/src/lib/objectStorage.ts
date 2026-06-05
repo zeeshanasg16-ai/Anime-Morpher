@@ -84,6 +84,47 @@ export class ObjectStorageService {
   }
 
   /**
+   * Generate a short-lived presigned GET URL for an already-stored object path
+   * (e.g. `/objects/uploads/<id>`). Used to hand a worker a read link to the
+   * input without sharing R2 credentials. Does not verify existence.
+   */
+  async getDownloadUrl(
+    objectPath: string,
+    expiresIn: number = 3600,
+  ): Promise<string> {
+    if (!objectPath.startsWith("/objects/")) {
+      throw new ObjectNotFoundError();
+    }
+    const key = objectPath.slice("/objects/".length);
+    if (!key) {
+      throw new ObjectNotFoundError();
+    }
+    const command = new GetObjectCommand({ Bucket: getBucket(), Key: key });
+    return getSignedUrl(getClient(), command, { expiresIn });
+  }
+
+  /**
+   * Mint a fresh output object key and a presigned PUT URL the worker can use
+   * to upload the converted result. Returns both the canonical object path to
+   * persist on the job and the upload URL.
+   */
+  async getOutputUploadUrl(
+    extension: string,
+    contentType?: string,
+    expiresIn: number = 3600,
+  ): Promise<{ uploadURL: string; objectPath: string }> {
+    const ext = extension.replace(/^\.+/, "");
+    const key = `outputs/${randomUUID()}${ext ? `.${ext}` : ""}`;
+    const command = new PutObjectCommand({
+      Bucket: getBucket(),
+      Key: key,
+      ...(contentType ? { ContentType: contentType } : {}),
+    });
+    const uploadURL = await getSignedUrl(getClient(), command, { expiresIn });
+    return { uploadURL, objectPath: `/objects/${key}` };
+  }
+
+  /**
    * Resolve an object entity from a stored path like `/objects/uploads/<id>`.
    * Verifies the object exists; throws ObjectNotFoundError otherwise.
    */

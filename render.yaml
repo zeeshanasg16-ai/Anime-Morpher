@@ -28,6 +28,11 @@ services:
         sync: false
       - key: R2_BUCKET
         sync: false
+      # Shared secret the GPU worker must send (header `x-worker-token`) to claim
+      # and report on jobs. Generate a long random string and set the SAME value
+      # on the worker. Without it, all /api/worker/* endpoints return 503.
+      - key: WORKER_TOKEN
+        sync: false
   # Single service only: the API above serves the React frontend in production,
   # so no separate static site is needed. The frontend calls the API at the
   # same origin via relative `/api/...` paths (no VITE_API_BASE_URL required).

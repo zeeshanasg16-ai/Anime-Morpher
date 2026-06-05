@@ -1,5 +1,5 @@
 import { Router, type IRouter } from "express";
-import { eq, and, desc, count, sql } from "drizzle-orm";
+import { eq, and, desc, count } from "drizzle-orm";
 import { db, jobsTable } from "@workspace/db";
 import {
   CreateJobBody,
@@ -130,8 +130,6 @@ router.post("/jobs", requireAuth, async (req: any, res): Promise<void> => {
     .returning();
 
   res.status(201).json(job);
-
-  simulateProcessing(job!.id).catch(() => {});
 });
 
 router.get("/jobs/:id", requireAuth, async (req: any, res): Promise<void> => {
@@ -204,54 +202,18 @@ router.post("/jobs/:id/retry", requireAuth, async (req: any, res): Promise<void>
 
   const [updated] = await db
     .update(jobsTable)
-    .set({ status: "queued", progress: 0, errorMessage: null })
+    .set({
+      status: "queued",
+      progress: 0,
+      errorMessage: null,
+      outputObjectPath: null,
+      workerId: null,
+      startedAt: null,
+    })
     .where(eq(jobsTable.id, id))
     .returning();
 
   res.json(updated);
-
-  simulateProcessing(id).catch(() => {});
 });
-
-async function simulateProcessing(jobId: number): Promise<void> {
-  await sleep(1500);
-
-  await db
-    .update(jobsTable)
-    .set({ status: "processing", progress: 10 })
-    .where(eq(jobsTable.id, jobId));
-
-  const steps = [25, 45, 65, 80, 95];
-  for (const progress of steps) {
-    await sleep(3000 + Math.random() * 2000);
-    await db
-      .update(jobsTable)
-      .set({ progress })
-      .where(eq(jobsTable.id, jobId));
-  }
-
-  await sleep(2000);
-
-  // No real AI transformation runs (free-tier deployment has no GPU/AI worker),
-  // so the result simply references the originally uploaded file. This makes the
-  // output viewable and downloadable; it is not an actual anime conversion.
-  const [job] = await db
-    .select({ inputObjectPath: jobsTable.inputObjectPath })
-    .from(jobsTable)
-    .where(eq(jobsTable.id, jobId));
-
-  await db
-    .update(jobsTable)
-    .set({
-      status: "completed",
-      progress: 100,
-      outputObjectPath: job?.inputObjectPath ?? null,
-    })
-    .where(eq(jobsTable.id, jobId));
-}
-
-function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
 
 export default router;

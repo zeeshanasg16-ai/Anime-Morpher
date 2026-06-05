@@ -168,11 +168,11 @@ export default function JobDetail() {
           <div className="flex items-center justify-between mb-4">
             <div>
               <p className="font-medium text-foreground mb-0.5">
-                {job.status === "queued" ? "Waiting in queue..." : "Transforming your media..."}
+                {job.status === "queued" ? "Waiting for an available worker..." : "Transforming your media..."}
               </p>
               <p className="text-sm text-muted-foreground">
                 {job.status === "queued"
-                  ? "Your job is in the queue and will start processing soon"
+                  ? "Your job is queued. It will start as soon as a GPU worker is online and picks it up."
                   : "AI is analyzing frames and applying your chosen style"}
               </p>
             </div>
@@ -207,10 +207,6 @@ export default function JobDetail() {
             <CheckCircle2 className="w-5 h-5 text-green-400" />
             <h2 className="font-semibold text-green-400">Transformation complete</h2>
           </div>
-          <p className="text-xs text-muted-foreground mb-4">
-            Preview build: AI styling isn't applied yet — this shows your original
-            file so you can view and download it.
-          </p>
           {job.outputObjectPath ? (
             <div className="rounded-xl overflow-hidden bg-black/50 flex items-center justify-center min-h-[200px]">
               {job.type === "video_morph" ? (

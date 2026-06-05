@@ -28,6 +28,10 @@ export const jobsTable = pgTable("jobs", {
     enum: ["anime", "cartoon", "ghibli", "cyberpunk", "watercolor"],
   }).default("anime"),
   durationSeconds: real("duration_seconds"),
+  // Job-coordination fields for safe multi-worker claiming + crash recovery.
+  workerId: text("worker_id"),
+  startedAt: timestamp("started_at", { withTimezone: true }),
+  attempts: integer("attempts").notNull().default(0),
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),
